@@ -1,7 +1,8 @@
-library urovo_scan;
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
+import 'urovo_scan_platform_interface.dart';
+
+class UrovoScan {
+  Future<String?> getPlatformVersion() {
+    return UrovoScanPlatform.instance.getPlatformVersion();
+  }
 }
