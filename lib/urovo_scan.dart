@@ -2,7 +2,7 @@
 import 'urovo_scan_platform_interface.dart';
 
 class UrovoScan {
-  Future<String?> getPlatformVersion() {
-    return UrovoScanPlatform.instance.getPlatformVersion();
-  }
+  /// Fires whenever the battery state changes.
+  Stream<String> get onScanCodeChanged =>
+      UrovoScanPlatform.instance.onScanCodeChanged();
 }

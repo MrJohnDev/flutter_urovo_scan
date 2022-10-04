@@ -7,11 +7,14 @@ import 'urovo_scan_platform_interface.dart';
 class MethodChannelUrovoScan extends UrovoScanPlatform {
   /// The method channel used to interact with the native platform.
   @visibleForTesting
-  final methodChannel = const MethodChannel('urovo_scan');
+  final EventChannel eventChannel = const EventChannel("com.mrjohndev.urovo_scan/plugin");
 
-  @override
-  Future<String?> getPlatformVersion() async {
-    final version = await methodChannel.invokeMethod<String>('getPlatformVersion');
-    return version;
+  Stream<String>? _onScanCodeChanged;
+
+  Stream<String> onScanCodeChanged() {
+    _onScanCodeChanged ??= eventChannel
+          .receiveBroadcastStream()
+          .map((dynamic event) => (event));
+    return _onScanCodeChanged!;
   }
 }
