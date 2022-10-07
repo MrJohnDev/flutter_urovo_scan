@@ -24,17 +24,16 @@ public class UrovoScanPlugin implements FlutterPlugin, EventChannel.StreamHandle
     private EventChannel eventChannel;
 
     private static final String CHANNEL = "com.mrjohndev.urovo_scan/plugin";
-    private static final String ACTION_DECODE = ScanManager.ACTION_DECODE;
+    private static final String ACTION_DECODE = "android.intent.ACTION_DECODE_DATA";
 
     private final static String PARAM_BC_VAL = "barcode_string";
-    private final static String PARAM_BC_TYPE = "barcode_type";
 
     private ScanManager mScanManager = null;
 
 
     private BroadcastReceiver onScanReceiver(final EventChannel.EventSink events) {
         Log.i("UrovoScanPlugin", "onScanReceiver");
-        // KTM OD128
+
         return new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -71,7 +70,6 @@ public class UrovoScanPlugin implements FlutterPlugin, EventChannel.StreamHandle
         applicationContext = binding.getApplicationContext();
         eventChannel = new EventChannel(binding.getBinaryMessenger(), CHANNEL);
         eventChannel.setStreamHandler(this);
-
     }
 
     @Override
@@ -87,10 +85,7 @@ public class UrovoScanPlugin implements FlutterPlugin, EventChannel.StreamHandle
      * @param register , ture register , false unregister
      */
     private void registerReceiver(boolean register) {
-        if (applicationContext == null) {
-            Log.e("registerReceiver", "applicationContext is null");
-            return;
-        }
+        if (applicationContext == null) return;
         if (register && mScanManager != null) {
             IntentFilter filter = new IntentFilter();
             int[] idbuf = new int[]{PropertyID.WEDGE_INTENT_ACTION_NAME, PropertyID.WEDGE_INTENT_DATA_STRING_TAG};
@@ -111,11 +106,7 @@ public class UrovoScanPlugin implements FlutterPlugin, EventChannel.StreamHandle
     private boolean initScan() {
         mScanManager = new ScanManager();
         boolean powerOn = mScanManager.getScannerState();
-        Log.i("initScan", "powerOn1 " + powerOn);
-        if (!powerOn) {
-            powerOn = mScanManager.openScanner();
-            Log.i("initScan", "powerOn " + powerOn);
-        }
+        if (!powerOn) powerOn = mScanManager.openScanner();
         return powerOn;
     }
 }

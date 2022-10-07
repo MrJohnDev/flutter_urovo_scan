@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -23,7 +24,9 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _scanCodeStream = _urovoScan.onScanCodeChanged.listen((String state) {
-      print("state"+state);
+      if (kDebugMode) {
+        print("state$state");
+      }
       if (!mounted) return;
       setState(() {
         code = state;
@@ -36,10 +39,10 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Plugin example app'),
+          title: const Text('Urovo scan example'),
         ),
         body: Center(
-          child: Text(key:const Key('scan_result'),'Scan code: $code\n'),
+          child: Text('Scan code: $code\n'),
         ),
       ),
     );
