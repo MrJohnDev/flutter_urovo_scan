@@ -25,10 +25,6 @@ public class UrovoScanPlugin implements FlutterPlugin, EventChannel.StreamHandle
 
     private static final String CHANNEL = "com.mrjohndev.urovo_scan/plugin";
     private static final String ACTION_DECODE = ScanManager.ACTION_DECODE;
-    private static final String BARCODE_STRING_TAG = ScanManager.BARCODE_STRING_TAG;
-    private static final String BARCODE_TYPE_TAG = ScanManager.BARCODE_TYPE_TAG;
-    private static final String BARCODE_LENGTH_TAG = ScanManager.BARCODE_LENGTH_TAG;
-    private static final String DECODE_DATA_TAG = ScanManager.DECODE_DATA_TAG;
 
     private final static String PARAM_BC_VAL = "barcode_string";
     private final static String PARAM_BC_TYPE = "barcode_type";
@@ -42,20 +38,11 @@ public class UrovoScanPlugin implements FlutterPlugin, EventChannel.StreamHandle
         return new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                String scanResult = intent.getStringExtra(PARAM_BC_VAL);
-                String bc_type = intent.getStringExtra(PARAM_BC_TYPE);
-                /*String action = intent.getAction();
-                Log.e("onReceive", "action:" + action);
-                // Get scan results, including string and byte data etc.
-                byte[] barcode = intent.getByteArrayExtra(DECODE_DATA_TAG);
-                int barcodeLen = intent.getIntExtra(BARCODE_LENGTH_TAG, 0);
-                byte temp = intent.getByteExtra(BARCODE_TYPE_TAG, (byte) 0);
-                String barcodeStr = intent.getStringExtra(BARCODE_STRING_TAG);
-                Log.i("barcode", "type:" + temp);
-                String scanResult = new String(barcode, 0, barcodeLen);
-                // print scan results.
-                scanResult = " length：" + barcodeLen + "\nbarcode：" + scanResult + "\nbytesToHexString：" + bytesToHexString(barcode) + "\nbarcodeStr:" + barcodeStr;*/
-                events.success(scanResult);
+                try {
+                    events.success(intent.getStringExtra(PARAM_BC_VAL));
+                } catch (Exception ignore) {
+
+                }
             }
         };
     }
@@ -70,7 +57,6 @@ public class UrovoScanPlugin implements FlutterPlugin, EventChannel.StreamHandle
         }
         this.receiver = onScanReceiver(eventSink);
         registerReceiver(true);
-
     }
 
     @Override
@@ -101,7 +87,7 @@ public class UrovoScanPlugin implements FlutterPlugin, EventChannel.StreamHandle
      * @param register , ture register , false unregister
      */
     private void registerReceiver(boolean register) {
-        if(applicationContext==null){
+        if (applicationContext == null) {
             Log.e("registerReceiver", "applicationContext is null");
             return;
         }
