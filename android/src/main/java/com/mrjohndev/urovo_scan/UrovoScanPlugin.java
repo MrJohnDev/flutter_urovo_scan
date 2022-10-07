@@ -30,15 +30,21 @@ public class UrovoScanPlugin implements FlutterPlugin, EventChannel.StreamHandle
     private static final String BARCODE_LENGTH_TAG = ScanManager.BARCODE_LENGTH_TAG;
     private static final String DECODE_DATA_TAG = ScanManager.DECODE_DATA_TAG;
 
+    private final static String PARAM_BC_VAL = "barcode_string";
+    private final static String PARAM_BC_TYPE = "barcode_type";
+
     private ScanManager mScanManager = null;
 
 
     private BroadcastReceiver onScanReceiver(final EventChannel.EventSink events) {
         Log.i("UrovoScanPlugin", "onScanReceiver");
+        // KTM OD128
         return new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
+                String scanResult = intent.getStringExtra(PARAM_BC_VAL);
+                String bc_type = intent.getStringExtra(PARAM_BC_TYPE);
+                /*String action = intent.getAction();
                 Log.e("onReceive", "action:" + action);
                 // Get scan results, including string and byte data etc.
                 byte[] barcode = intent.getByteArrayExtra(DECODE_DATA_TAG);
@@ -48,7 +54,7 @@ public class UrovoScanPlugin implements FlutterPlugin, EventChannel.StreamHandle
                 Log.i("barcode", "type:" + temp);
                 String scanResult = new String(barcode, 0, barcodeLen);
                 // print scan results.
-                scanResult = " length：" + barcodeLen + "\nbarcode：" + scanResult + "\nbytesToHexString：" + bytesToHexString(barcode) + "\nbarcodeStr:" + barcodeStr;
+                scanResult = " length：" + barcodeLen + "\nbarcode：" + scanResult + "\nbytesToHexString：" + bytesToHexString(barcode) + "\nbarcodeStr:" + barcodeStr;*/
                 events.success(scanResult);
             }
         };
@@ -59,7 +65,6 @@ public class UrovoScanPlugin implements FlutterPlugin, EventChannel.StreamHandle
         Log.i("UrovoScanPlugin", "onListen");
         boolean isSuccess = initScan();
         if (!isSuccess) {
-            Log.i("UrovoScanPlugin", "!isSuccess");
             eventSink.error("init", "Init error", "scanner init");
             return;
         }
@@ -77,8 +82,6 @@ public class UrovoScanPlugin implements FlutterPlugin, EventChannel.StreamHandle
 
     @Override
     public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
-        Log.i("UrovoScanPlugin", "onAttachedToEngine");
-        Log.i("UrovoScanPlugin", "this.applicationContext"+binding.getApplicationContext());
         applicationContext = binding.getApplicationContext();
         eventChannel = new EventChannel(binding.getBinaryMessenger(), CHANNEL);
         eventChannel.setStreamHandler(this);
@@ -87,7 +90,6 @@ public class UrovoScanPlugin implements FlutterPlugin, EventChannel.StreamHandle
 
     @Override
     public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
-        Log.i("UrovoScanPlugin", "onDetachedFromEngine"+this.applicationContext);
         registerReceiver(false);
         applicationContext = null;
         eventChannel.setStreamHandler(null);
@@ -129,25 +131,5 @@ public class UrovoScanPlugin implements FlutterPlugin, EventChannel.StreamHandle
             Log.i("initScan", "powerOn " + powerOn);
         }
         return powerOn;
-        // initBarcodeParameters();
-    }
-
-    /**
-     * byte[] toHex String
-     *
-     * @return String
-     */
-    public static String bytesToHexString(byte[] src) {
-        StringBuilder stringBuilder = new StringBuilder();
-        if (src == null || src.length <= 0) {
-            return null;
-        }
-        for (byte b : src) {
-            int v = b & 0xFF;
-            String hv = Integer.toHexString(v);
-            if (hv.length() < 2) stringBuilder.append(0);
-            stringBuilder.append(hv);
-        }
-        return stringBuilder.toString();
     }
 }
